@@ -1,0 +1,57 @@
+server:
+  port: 8000 # 해당 어플리케이션의(즉 api gate를 돌리고 있는) 포트 번호. 얘를 확인하려면 localhost:8000
+  # 따라서 클라이언트의 요청은  http://localhost:8000/first-service/welcome
+  # http://localhost:8000/second-service/welcome
+
+#유레카 설정
+eureka:
+  client:
+    register-with-eureka: true # Eureka 서버에 자기 자신도 등록해야 함(자신도 클라이언트로 등록)
+    fetch-registry: true
+    service-url:
+      # serviceDiscovery를 보면 알겠지만 127.0.0.1:8761 얘는 현재 eureka 서버의 주소임
+      defaultZone: http://localhost:8761/eureka #해당 클라이언트 서버(마이크로 서비스 서버)가 가진 위치값.
+      # 즉 eureka라는 엔드 포인트에 해당 인스턴스(apigateway-service 인스턴스)를 등록하겠다
+
+# spring cloud gateway 설정
+spring:
+  application:
+    name: apigateway-service
+  cloud:
+    gateway:
+      default-filters: # 모든 라우팅에 대해(모든 마이크로 서비스에 대해) 적용되는 공통 필터
+        - name: GlobalFilter #빈으로 등록된 이름 그대로를 써줘야 함. 아니면 에러남
+          args: # 해당 필터 클래스에 대해(해당 빈 메서드로) 넘겨주고 싶은 파라미터
+            baseMessage: Spring Cloud Gateway Global Filter
+            preLogger: true
+            postLogger: true
+      routes: # 라우트 여러 개 등록 가능
+        - id: first-service
+          uri: http://localhost:8081/ # 최종적으로 라우팅될 경로의 basePath라고 이해하면 쉬울 듯
+          #  그런데 http://localhost:8081/first-service/** 로 predicate가 붙은 채로 라우팅됨
+          predicates: #조건절
+            - Path=/first-service/**
+          filters: # 각 라우트 별 커스텀 필터 추가
+#            - AddRequestHeader=first-request, first-request-header2 # key, value
+#            - AddResponseHeader=first-response, first-response-header2 # key, value
+             - CustomFilter
+        - id: second-service
+          uri: http://localhost:8082/
+          predicates: #조건절
+            - Path=/second-service/**
+          filters: # 각 라우트 별 커스텀 필터 추가
+#            - AddRequestHeader=second-request, second-request-header2 # key, value
+#            - AddResponseHeader=second-response, second-response-header2 # key, value
+             - name: CustomFilter
+             - name: LoggingFilter #빈으로 등록된 이름 그대로를 써줘야 함. 아니면 에러남
+               args: # 해당 필터 클래스에 대해(해당 빈 메서드로) 넘겨주고 싶은 파라미터
+                 baseMessage: Hi, there
+                 preLogger: true
+                 postLogger: true
+#      default-filters:
+#        - name: GlobalFilter #빈으로 등록된 이름 그대로를 써줘야 함. 아니면 에러남
+#          args: # 해당 필터 클래스에 대해(해당 빈 메서드로) 넘겨주고 싶은 파라미터
+#            baseMessage: Spring Cloud Gateway Global Filter
+#            preLogger: true
+#            postLogger: true
+
