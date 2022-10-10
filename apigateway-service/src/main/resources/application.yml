@@ -27,7 +27,8 @@ spring:
             postLogger: true
       routes: # 라우트 여러 개 등록 가능
         - id: first-service
-          uri: http://localhost:8081/ # 최종적으로 라우팅될 경로의 basePath라고 이해하면 쉬울 듯
+          uri: lb://MY-FIRST-SERVICE # 변경됨. 즉, 바로 http://localhost:8081/ 로 라우팅하는 것이 아니라 Eureka서버로 가서 그 쪽으로 클라이언트 요청 정보를 전달해주겠다
+          # uri 기존:  http://localhost:8081/ # 최종적으로 라우팅될 경로의 basePath라고 이해하면 쉬울 듯
           #  그런데 http://localhost:8081/first-service/** 로 predicate가 붙은 채로 라우팅됨
           predicates: #조건절
             - Path=/first-service/**
@@ -36,7 +37,8 @@ spring:
 #            - AddResponseHeader=first-response, first-response-header2 # key, value
              - CustomFilter
         - id: second-service
-          uri: http://localhost:8082/
+          uri: lb://MY-SECOND-SERVICE  # 변경됨. 즉, 바로 http://localhost:8082/ 로 라우팅하는 것이 아니라 Eureka서버로 가서 그 쪽으로 클라이언트 요청 정보를 전달해주겠다
+          # 기존: http://localhost:8082/
           predicates: #조건절
             - Path=/second-service/**
           filters: # 각 라우트 별 커스텀 필터 추가
