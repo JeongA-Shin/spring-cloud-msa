@@ -1,0 +1,17 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: my-first-service
+
+
+#유레카 설정
+eureka:
+  client:
+    register-with-eureka: true # Eureka 서버에 자기 자신도 등록해야 함(자신도 클라이언트로 등록)
+    fetch-registry: true
+    service-url:
+      # serviceDiscovery를 보면 알겠지만 127.0.0.1:8761 얘는 현재 eureka 서버의 주소임
+      defaultZone: http://localhost:8761/eureka #해당 클라이언트 서버(마이크로 서비스 서버)가 가진 위치값.
+      # 즉 eureka라는 엔드 포인트에 해당 인스턴스(apigateway-service 인스턴스)를 등록하겠다
