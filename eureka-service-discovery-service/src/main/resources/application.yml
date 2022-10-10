@@ -1,0 +1,11 @@
+server:
+  port: 8761 #로컬 호스트(해당 서버)에서 돌리는 Eureka 서버 인스턴스의 포트 번호
+
+spring:
+  application:
+    name: discoveryservice #Eureka 서버 인스턴스의 이름
+
+eureka:
+  client:
+    register-with-eureka: false # 자기 자신은 Eureka서버에 클라이언트로 등록하지 않음
+    fetch-registry: false #EUREKA 서버로부터 인스턴스들의 정보를 주기적으로 가져올 것인지. TRUE이면 갱신된 정보를 해당 서버 인스턴스로 가져오겠다는 의미
